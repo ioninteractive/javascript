@@ -1,4 +1,4 @@
-# Airbnb JavaScript Style Guide() {
+# ion interactive JavaScript Style Guide() {
 
 *A mostly reasonable approach to JavaScript*
 
@@ -1368,7 +1368,7 @@
 
 ## <a name='backbone'>Backbone</a>
 
-  - Prefer listenTo/stopListening for event subscriptions.
+  - Prefer listenTo / stopListening for event subscriptions.
 
     **[[⬆]](#TOC)**
 
