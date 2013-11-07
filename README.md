@@ -367,18 +367,33 @@
     var superPower = new SuperPower();
     ```
 
-  - Use one `var` declaration for multiple variables and declare each variable on a newline.
+  - Only use one `var` declaration for multiple variables for declarations or simple assignments only. Also declare each variable on a newline.
 
     ```javascript
     // bad
-    var items = getItems();
-    var goSportsTeam = true;
-    var dragonball = 'z';
-
-    // good
     var items = getItems(),
         goSportsTeam = true,
         dragonball = 'z';
+    
+    // bad
+    var items, goSportsTeam = true, dragonball = 'z';
+    
+    items = getItems();
+
+    // good
+    var items, 
+        goSportsTeam,
+        dragonball;
+
+    // good
+    var items = getItems();
+    var goSportsTeam = true,
+        dragonball = 'z';
+
+    // good (preferred)
+    var items = getItems();
+    var goSportsTeam = true;
+    var dragonball = 'z';
     ```
 
   - Declare unassigned variables last. This is helpful when later on you might need to assign a variable depending on one of the previous assigned variables.
@@ -396,24 +411,24 @@
         len;
 
     // good
-    var items = getItems(),
-        goSportsTeam = true,
+    var items = getItems();
+    var goSportsTeam = true,
         dragonball,
         length,
         i;
     ```
 
-  - Assign variables at the top of their scope. This helps avoid issues with variable declaration and assignment hoisting related issues.
+  - Don't assign variables at the top of their scope (heresy I know). While this *can* lead to hoisting issues, these issues are caught by linters and make the code harder to reason about since usage variable could be far from its declaration.
 
     ```javascript
     // bad
     function() {
+      var name = getName();
+
       test();
       console.log('doing stuff..');
 
       //..other stuff..
-
-      var name = getName();
 
       if (name === 'test') {
         return false;
@@ -424,13 +439,12 @@
 
     // good
     function() {
-      var name = getName();
-
       test();
       console.log('doing stuff..');
 
       //..other stuff..
 
+      var name = getName();
       if (name === 'test') {
         return false;
       }
@@ -604,15 +618,12 @@
 
 ## <a name='blocks'>Blocks</a>
 
-  - Use braces with all multi-line blocks.
+  - Use braces with all blocks.
 
     ```javascript
     // bad
     if (test)
       return false;
-
-    // good
-    if (test) return false;
 
     // good
     if (test) {
@@ -726,12 +737,12 @@
 
 ## <a name='whitespace'>Whitespace</a>
 
-  - Use soft tabs set to 2 spaces
+  - Use soft tabs set to 4 spaces
 
     ```javascript
     // bad
     function() {
-    ∙∙∙∙var name;
+    ∙∙var name;
     }
 
     // bad
@@ -741,7 +752,7 @@
 
     // good
     function() {
-    ∙∙var name;
+    ∙∙∙∙var name;
     }
     ```
   - Place 1 space before the leading brace.
@@ -753,7 +764,7 @@
     }
 
     // good
-    function test() {
+    function test()∙{
       console.log('test');
     }
 
@@ -764,28 +775,12 @@
     });
 
     // good
-    dog.set('attr', {
+    dog.set('attr',∙{
       age: '1 year',
       breed: 'Bernese Mountain Dog'
     });
     ```
-  - Place an empty newline at the end of the file.
-
-    ```javascript
-    // bad
-    (function(global) {
-      // ...stuff...
-    })(this);
-    ```
-
-    ```javascript
-    // good
-    (function(global) {
-      // ...stuff...
-    })(this);
-
-    ```
-
+  
   - Use indentation when making long method chains.
 
     ```javascript
@@ -794,10 +789,10 @@
 
     // good
     $('#items')
-      .find('.selected')
+        .find('.selected')
         .highlight()
         .end()
-      .find('.open')
+        .find('.open')
         .updateCount();
 
     // bad
@@ -809,12 +804,13 @@
     // good
     var leds = stage.selectAll('.led')
         .data(data)
-      .enter().append('svg:svg')
-        .class('led', true)
-        .attr('width',  (radius + margin) * 2)
-      .append('svg:g')
-        .attr('transform', 'translate(' + (radius + margin) + ',' + (radius + margin) + ')')
-        .call(tron.led);
+        .enter()
+        .append('svg:svg')
+            .class('led', true)
+            .attr('width',  (radius + margin) * 2)
+        .append('svg:g')
+            .attr('transform', 'translate(' + (radius + margin) + ',' + (radius + margin) + ')')
+            .call(tron.led);
     ```
 
     **[[⬆]](#TOC)**
@@ -1301,6 +1297,7 @@
 
 ## <a name='jquery'>jQuery</a>
 
+  - Limit jQuery use to DOM manipulation / XHR only.
   - Prefix jQuery object variables with a `$`.
 
     ```javascript
@@ -1360,6 +1357,51 @@
 
     **[[⬆]](#TOC)**
 
+## <a name='underscore'>Underscore / Lo-dash</a>
+
+  - Prefer _.each over non-trivial for loops.
+  - Prefer expressive _ methods (map, filter, any, all, etc) over _.each.
+  - Use this binding on _ methods when available.
+  - Use _ string manipulation methods.
+
+    **[[⬆]](#TOC)**
+
+## <a name='backbone'>Backbone</a>
+
+  - Prefer listenTo/stopListening for event subscriptions.
+
+    **[[⬆]](#TOC)**
+
+## <a name='mixins'>Mixins</a>
+
+  - Restrict to the adding of external functionality to an object. Avoid using them to share internal implementations - better to use a shared object (instance or singlton).
+  - Use caution when using mixins that conflict (or could conflict) with default behaviors.
+ 
+      ```javascript
+    var base = {
+        validate: function() {
+            // Do validation here
+        }
+    };
+
+    // bad
+    var mixin = {
+        validate: function() {
+            // Custom validation here
+        }
+    };
+
+    // good
+    var mixin = {
+        validate: function() {
+            if (!this.onValidate || this.onValidate()) {
+                // Custom validation here
+            }
+        }
+    };
+    ```
+
+    **[[⬆]](#TOC)**
 
 ## <a name='es5'>ECMAScript 5 Compatibility</a>
 
