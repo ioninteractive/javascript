@@ -69,6 +69,8 @@
     console.log(foo[0], bar[0]); // => 9, 9
     ```
 
+TODO: Don't extend the prototypes of primitives
+
     **[[⬆]](#TOC)**
 
 ## <a name='objects'>Objects</a>
@@ -164,7 +166,7 @@
 
     ```javascript
     function trigger() {
-      var args = Array.prototype.slice.call(arguments);
+      var args = Array.prototype.slice.call(null, arguments);
       ...
     }
     ```
@@ -190,7 +192,7 @@
     var fullName = 'Bob ' + this.lastName;
     ```
 
-  - Strings longer than 80 characters should be written across multiple lines using string concatenation.
+  - Strings that are really long should be written across multiple lines using string concatenation.
   - Note: If overused, long strings with concatenation could impact performance. [jsPerf](http://jsperf.com/ya-string-concat) & [Discussion](https://github.com/airbnb/javascript/issues/40)
 
     ```javascript
@@ -258,6 +260,8 @@
       return '<ul><li>' + items.join('</li><li>') + '</li></ul>';
     }
     ```
+    
+    // TODO: Add micro-templating - better for readbility - watch out for loops
 
     **[[⬆]](#TOC)**
 
@@ -283,7 +287,7 @@
     })();
     ```
 
-  - Never declare a function in a non-function block (if, while, etc). Assign the function to a variable instead. Browsers will allow you to do it, but they all interpret it differently, which is bad news bears.
+  - Never declare a function in a non-function block (if, for, while, etc). Assign the function to a variable instead. Browsers will allow you to do it, but they all interpret it differently, which is bad news bears.
   - **Note:** ECMA-262 defines a `block` as a list of statements. A function declaration is not a statement. [Read ECMA-262's note on this issue](http://www.ecma-international.org/publications/files/ECMA-ST/Ecma-262.pdf#page=97).
 
     ```javascript
