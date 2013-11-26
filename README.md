@@ -119,6 +119,33 @@ TODO: Don't extend the prototypes of primitives
       type: 'alien'
     };
     ```
+
+  - Use me instead of reserved word self.  [More info](http://stackoverflow.com/questions/3216428/self-property-in-javascript)
+
+    ```javascript
+    // bad
+    // For all windows, the self and window properties of a window object are synonyms for the current window, 
+    // and you can optionally use them to refer to the current window.
+    saveStyle: function(styles, compiledStyles) {
+      var self = this;
+      this.model.saveRelated(styleData, {
+        success: function(mdl, response) {
+          self.onStyleSaved();
+        }
+      });
+    }
+
+    // good
+    saveStyle: function(styles, compiledStyles) {
+      var me = this;
+      this.model.saveRelated(styleData, {
+        success: function(mdl, response) {
+          me.onStyleSaved();
+        }
+      });
+    }
+    ```
+
     **[[⬆]](#TOC)**
 
 ## <a name='arrays'>Arrays</a>
@@ -574,6 +601,14 @@ TODO: Don't extend the prototypes of primitives
 
 ## <a name='conditionals'>Conditional Expressions & Equality</a>
 
+  - Always put parentheses around conditionals.
+    ```javascript
+    var isSignificant = p > 0.90;
+    if (isSignificant) {
+      // ...stuff...
+    }
+    ```
+
   - Use `===` and `!==` over `==` and `!=`.
   - Conditional expressions are evaluated using coercion with the `ToBoolean` method and always follow these simple rules:
 
@@ -619,6 +654,32 @@ TODO: Don't extend the prototypes of primitives
 
     **[[⬆]](#TOC)**
 
+
+  - Avoid chaining of ternary expressions
+
+    ```javascript
+    // bad, be careful or you will end up with convoluted code like this:
+    var k = a ? (b ? (c ? d : e) : (d ? e : f)) : f ? (g ? h : i) : j;
+
+    // good, better for readability and debugging
+    var k;
+    if (a) {
+      if (b) {
+        k = c ? d : e;
+      }
+      else {
+        k = d ? e : f;
+      }
+    }
+    else {
+      if (f) {
+        k = g ? h : i;
+      }
+      else {
+        k = j;
+      }
+    }
+    ```
 
 ## <a name='blocks'>Blocks</a>
 
@@ -741,6 +802,7 @@ TODO: Don't extend the prototypes of primitives
 
 ## <a name='whitespace'>Whitespace</a>
 
+  - Avoid whitespace at the end of lines.  Visual Studio often does this
   - Use soft tabs set to 4 spaces
 
     ```javascript
