@@ -119,6 +119,65 @@ TODO: Don't extend the prototypes of primitives
       type: 'alien'
     };
     ```
+
+  - Break up object assignment into multiple lines unless it's very simple
+
+     ```javascript
+    // bad
+    var superman = {
+      type: 'alien', weakness: 'kryptonite', friends: [ 'Lois Lane', 'Jimmy Olsen', 'Batman', 'Aquaman', 'Wonder Woman']
+    };
+
+    // good
+    var superman = {
+      type: 'alien', 
+      weakness: 'kryptonite', 
+      friends: [ 'Lois Lane', 'Jimmy Olsen', 'Batman', 'Aquaman', 'Wonder Woman' ]
+    };
+    ```
+ 
+  - Use me instead of reserved word self.  [More info](http://stackoverflow.com/questions/3216428/self-property-in-javascript)
+
+    ```javascript
+    // bad
+    // For all windows, the self and window properties of a window object are synonyms
+    // for the current window, and you can optionally use them to refer to the current 
+    // window.
+    saveStyle: function(styles, compiledStyles) {
+      var self = this;
+      this.model.saveRelated(styleData, {
+        success: function(mdl, response) {
+          self.onStyleSaved();
+        }
+      });
+    }
+
+    // good
+    saveStyle: function(styles, compiledStyles) {
+      var me = this;
+      this.model.saveRelated(styleData, {
+        success: function(mdl, response) {
+          me.onStyleSaved();
+        }
+      });
+    }
+    ```
+ 
+  - Long object function chains can be really handy, but should be broken up into multiple lines to assist in debugging
+
+    ```javascript
+    // bad
+    $('.some-element').click(handleClick).parents('.container')[0].slideDown();
+
+    // good
+    $('.some-element')
+      .click(handleClick)
+      .parents('.container')[0]
+      .slideDown();
+    ```
+
+  - Function chaining is great, but be wary of null or undefined values coming back mid-chain. In the above example, if the .container selector returns no results, you'll encounter a JavaScript error.
+
     **[[⬆]](#TOC)**
 
 ## <a name='arrays'>Arrays</a>
@@ -287,6 +346,8 @@ TODO: Don't extend the prototypes of primitives
     })();
     ```
 
+  - Use named function expressions whenever possible as they provide named stack traces which assist in debugging, with the following exception ...
+  - Avoid using named function expressions in front-end experience scripts -- RMW's and any others, due to issues in IE8. [More info](http://kangax.github.io/nfe/#jscript-bugs)
   - Never declare a function in a non-function block (if, for, while, etc). Assign the function to a variable instead. Browsers will allow you to do it, but they all interpret it differently, which is bad news bears.
   - **Note:** ECMA-262 defines a `block` as a list of statements. A function declaration is not a statement. [Read ECMA-262's note on this issue](http://www.ecma-international.org/publications/files/ECMA-ST/Ecma-262.pdf#page=97).
 
@@ -574,6 +635,14 @@ TODO: Don't extend the prototypes of primitives
 
 ## <a name='conditionals'>Conditional Expressions & Equality</a>
 
+  - Always put parentheses around conditionals.
+    ```javascript
+    var isSignificant = p > 0.90;
+    if (isSignificant) {
+      // ...stuff...
+    }
+    ```
+
   - Use `===` and `!==` over `==` and `!=`.
   - Conditional expressions are evaluated using coercion with the `ToBoolean` method and always follow these simple rules:
 
@@ -620,6 +689,32 @@ TODO: Don't extend the prototypes of primitives
     **[[⬆]](#TOC)**
 
 
+  - Avoid chaining of ternary expressions
+
+    ```javascript
+    // bad, be careful or you will end up with convoluted code like this:
+    var k = a ? (b ? (c ? d : e) : (d ? e : f)) : f ? (g ? h : i) : j;
+
+    // good, better for readability and debugging
+    var k;
+    if (a) {
+      if (b) {
+        k = c ? d : e;
+      }
+      else {
+        k = d ? e : f;
+      }
+    }
+    else {
+      if (f) {
+        k = g ? h : i;
+      }
+      else {
+        k = j;
+      }
+    }
+    ```
+
 ## <a name='blocks'>Blocks</a>
 
   - Use braces with all blocks.
@@ -640,6 +735,28 @@ TODO: Don't extend the prototypes of primitives
     // good
     function() {
       return false;
+    }
+    ```
+
+  - Keep leading brace on same line as if or else blocks.
+
+    ```javascript
+    // ok
+    if (test)
+    {
+      // ...stuff...
+    }
+    else
+    {
+      // ...other stuff...
+    }
+
+    // preferred
+    if (test) {
+      // ...stuff...
+    }
+    else {
+      // ...other stuff...
     }
     ```
 
@@ -736,11 +853,29 @@ TODO: Don't extend the prototypes of primitives
     }
   ```
 
+  - When making any changes deemed non-trivial, add your initials and a date at the beginning of a comment (and after TODO: or FIXME: if present)
+
+    ```javascript
+    function Calculator() {
+
+      // TODO: [BR] 10/3/13 shouldn't use a global here
+      total = 0;
+
+      // ...stuff...
+
+      // [BR] 11/27/13 Clear the memory store.
+      ms = null;
+
+      return this;
+    }
+    ```
+
     **[[⬆]](#TOC)**
 
 
 ## <a name='whitespace'>Whitespace</a>
 
+  - Avoid whitespace at the end of lines.  Visual Studio often does this
   - Use soft tabs set to 4 spaces
 
     ```javascript
@@ -1239,6 +1374,30 @@ TODO: Don't extend the prototypes of primitives
 
 ## <a name='events'>Events</a>
 
+  - Event names should follow the convention onFooAction where Foo is the object and Action is the event type (i.e. Change, Changed, etc.)
+
+    ```js
+    // bad
+    onChangeTitle: function() {
+    ...
+
+    onDeleteTitle: function() {
+    ...
+
+    ```
+
+    prefer:
+
+    ```js
+    // good
+    onTitleChange: function() {
+    ...
+
+    onTitleDelete: function() {
+    ...
+
+    ```
+
   - When attaching data payloads to events (whether DOM events or something more proprietary like Backbone events), pass a hash instead of a raw value. This allows a subsequent contributor to add more data to the event payload without finding and updating every handler for the event. For example, instead of:
 
     ```js
@@ -1373,6 +1532,7 @@ TODO: Don't extend the prototypes of primitives
 ## <a name='backbone'>Backbone</a>
 
   - Prefer listenTo / stopListening for event subscriptions.
+  - Return this at the end of render to enable chained calls.
 
     **[[⬆]](#TOC)**
 
